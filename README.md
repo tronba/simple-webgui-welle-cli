@@ -10,4 +10,4 @@ Installation.
 
 Restart normally should not be nessesary. the new webgui can by default be found at http://ip:8080.
 
-![on phone](https://github.com/user-attachments/assets/52302b53-3d18-49d7-812b-4f7aa4d64fdf)
+![on phone](https://github.com/user-attachments/assets/f8df9c9b-5df1-406a-b4ee-b6884fb03585)
