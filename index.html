@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>DAB+ via Welle-cli</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body {
+    margin: 0;
+    background-color: #f8f3ed;
+    color: #1f1d1a;
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 15px;
+    line-height: 1.4;
+}
+
+.app {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 20px 18px 48px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.toolbar {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.toolbar label {
+    font-weight: 600;
+    font-size: 13px;
+}
+
+.toolbar select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #d7cfc6;
+    border-radius: 12px;
+    background-color: #fff;
+    font-size: 15px;
+}
+
+.block-note {
+    margin: 0;
+    font-size: 13px;
+    color: #5d564f;
+    min-height: 18px;
+}
+
+.now-playing {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+    border-radius: 18px;
+    background: linear-gradient(145deg, #ffffff, #f0e7de);
+    box-shadow: 0 6px 20px rgba(60, 54, 47, 0.08);
+}
+
+.now-playing.playing {
+    background: linear-gradient(145deg, #e5f9ed, #c8f2d9);
+    box-shadow: 0 8px 24px rgba(46, 196, 109, 0.25);
+}
+
+.fig2-label {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+    color: #2f2a25;
+}
+
+.ensemble-label {
+    margin: 0;
+    font-size: 14px;
+    color: #5d564f;
+}
+
+.dls-text {
+    min-height: 22px;
+    color: #3d3732;
+}
+
+.controls-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.primary-button {
+    flex-shrink: 0;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 999px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+    background: linear-gradient(135deg, #f44f38, #d3321c);
+    box-shadow: 0 8px 16px rgba(211, 50, 28, 0.25);
+    cursor: pointer;
+}
+
+.primary-button:active {
+    transform: scale(0.98);
+}
+
+.error-pill {
+    flex: 1;
+    padding: 10px 14px;
+    border-radius: 12px;
+    background-color: rgba(211, 50, 28, 0.08);
+    color: #75362a;
+    font-size: 13px;
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.error-pill span {
+    white-space: nowrap;
+}
+
+.error-pill.ok {
+    background-color: rgba(46, 196, 109, 0.1);
+    color: #22623d;
+}
+
+.service-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.service-button {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid transparent;
+    border-radius: 16px;
+    background-color: #fff;
+    font-size: 17px;
+    text-align: left;
+    font-weight: 600;
+    color: #2f2a25;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(60, 54, 47, 0.08);
+}
+
+.service-button.active {
+    border-color: #d3321c;
+    box-shadow: 0 6px 20px rgba(211, 50, 28, 0.25);
+}
+
+.service-button:active {
+    transform: scale(0.99);
+}
+
+audio {
+    display: none;
+}
+
+.footer {
+    text-align: center;
+    font-size: 12px;
+    color: #7a736c;
+}
+
+.footer a {
+    color: #7a736c;
+}
+
+@media (min-width: 600px) {
+    .app {
+        max-width: 540px;
+    }
+}
+</style>
+    </head>
+    <body>
+        <div class="app">
+            <div class="toolbar">
+                <label for="channelselector">Block</label>
+                <select id="channelselector" name="channel"></select>
+                <p class="block-note" id="blockInfo"></p>
+            </div>
+
+            <section class="now-playing">
+                <div>
+                    <p class="fig2-label" id="fig2label">Select a service</p>
+                    <p class="ensemble-label" id="ensemblelabel"></p>
+                </div>
+                <div class="dls-text" id="dlsText"></div>
+                <div class="controls-row">
+                    <button type="button" class="primary-button" id="playToggle">Play</button>
+                    <div class="error-pill ok" id="errorPill">
+                        <span id="frameErrors">Frame 0</span>
+                        <span id="rsErrors">RS 0</span>
+                        <span id="aacErrors">AAC 0</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="service-list" id="serviceList"></section>
+        </div>
+
+        <audio id="player"></audio>
+        <script type="text/javascript">
+var channels = ["5A","5B","5C","5D","6A","6B","6C","6D","7A","7B","7C","7D","8A","8B","8C","8D","9A","9B","9C","9D","10A","10B","10C","10D","11A","11B","11C","11D","12A","12B","12C","12D","13A","13B","13C","13D","13E","13F"];
+
+var channelLabels = {
+    // Example: "12C": "12C • Tromsø"
+};
+
+var channelNotes = {
+    // Example: "12C": "Regional mux covering northern counties"
+};
+
+function getChannelLabel(code) {
+    return channelLabels[code] || code;
+}
+
+function getChannelNote(code) {
+    return channelNotes[code] || "";
+}
+
+function updateBlockInfo(code) {
+    var target = document.getElementById("blockInfo");
+    if (!target) {
+        return;
+    }
+    target.textContent = getChannelNote(code);
+}
+
+function sameText(a, b) {
+    if (!a || !b) {
+        return false;
+    }
+    return a.trim().toLowerCase() === b.trim().toLowerCase();
+}
+
+var currentServiceId = null;
+var latestMuxData = null;
+var channelRefreshTimer = null;
+var muxRefreshTimer = null;
+
+window.onload = function () {
+    populateChannelSelector();
+    attachPlayerControls();
+    refreshChannel();
+    fetchMux();
+    channelRefreshTimer = setInterval(refreshChannel, 2000);
+    muxRefreshTimer = setInterval(fetchMux, 1000);
+};
+
+function populateChannelSelector() {
+    var selector = document.getElementById("channelselector");
+    if (!selector) {
+        return;
+    }
+    selector.innerHTML = "";
+    for (var i = 0; i < channels.length; i++) {
+        var option = document.createElement("option");
+        option.value = channels[i];
+        option.text = getChannelLabel(channels[i]);
+        selector.add(option);
+    }
+    selector.onchange = function () {
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/channel", true);
+        xhr.setRequestHeader("Content-type", "text/plain");
+        xhr.send(selector.value);
+        updateBlockInfo(selector.value);
+    };
+    var selectedValue = selector.value || (selector.options.length ? selector.options[0].value : "");
+    updateBlockInfo(selectedValue);
+}
+
+function attachPlayerControls() {
+    var player = document.getElementById("player");
+    var toggle = document.getElementById("playToggle");
+    if (!player || !toggle) {
+        return;
+    }
+    toggle.onclick = function () {
+        if (!currentServiceId) {
+            return;
+        }
+        if (player.paused || !player.currentSrc) {
+            playSelected();
+        } else {
+            stopPlayer();
+        }
+    };
+    player.addEventListener("play", updatePlayButton);
+    player.addEventListener("pause", updatePlayButton);
+    player.addEventListener("play", updateNowPlayingVisual);
+    player.addEventListener("pause", updateNowPlayingVisual);
+    player.addEventListener("ended", stopPlayer);
+    updatePlayButton();
+    updateNowPlayingVisual();
+}
+
+function fetchMux() {
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState !== 4 || xhr.status !== 200) {
+            return;
+        }
+        latestMuxData = JSON.parse(xhr.responseText);
+        renderServiceList();
+        renderNowPlaying();
+    };
+    xhr.open("GET", "/mux.json", true);
+    xhr.send();
+}
+
+function renderServiceList() {
+    var list = document.getElementById("serviceList");
+    if (!list) {
+        return;
+    }
+    list.innerHTML = "";
+    if (!latestMuxData || !latestMuxData.services) {
+        return;
+    }
+    var entries = [];
+    for (var key in latestMuxData.services) {
+        if (!Object.prototype.hasOwnProperty.call(latestMuxData.services, key)) {
+            continue;
+        }
+        var svc = latestMuxData.services[key];
+        var order = 864;
+        if (svc.components && svc.components.length > 0 && svc.components[0].subchannel) {
+            var sub = svc.components[0].subchannel;
+            if (sub.sad !== undefined) {
+                order = sub.sad;
+            }
+        }
+        entries.push({ order: order, service: svc });
+    }
+    entries.sort(function (a, b) { return a.order - b.order; });
+    for (var i = 0; i < entries.length; i++) {
+        appendServiceButton(entries[i].service, list);
+    }
+}
+
+function appendServiceButton(service, list) {
+    var button = document.createElement("button");
+    button.type = "button";
+    button.className = "service-button";
+    var label = "";
+    if (service.label) {
+        label = service.label.fig2label || service.label.label || "";
+    }
+    if (!label) {
+        label = String(service.sid);
+    }
+    button.textContent = label;
+    button.dataset.sid = String(service.sid);
+    button.onclick = function (evt) {
+        selectService(evt.currentTarget.dataset.sid, true);
+    };
+    if (String(service.sid) === String(currentServiceId)) {
+        button.classList.add("active");
+    }
+    list.appendChild(button);
+}
+
+function selectService(sid, autoPlay) {
+    if (!sid) {
+        return;
+    }
+    currentServiceId = String(sid);
+    markActiveButton();
+    renderNowPlaying();
+    if (autoPlay) {
+        playSelected();
+    } else {
+        updatePlayButton();
+    }
+}
+
+function playSelected() {
+    if (!currentServiceId) {
+        return;
+    }
+    var player = document.getElementById("player");
+    player.src = "/mp3/" + currentServiceId;
+    player.load();
+    var promise = player.play();
+    if (promise && promise.catch) {
+        promise.catch(updatePlayButton);
+    }
+    markActiveButton();
+    updatePlayButton();
+    updateNowPlayingVisual();
+}
+
+function stopPlayer() {
+    var player = document.getElementById("player");
+    player.pause();
+    player.removeAttribute("src");
+    player.load();
+    updatePlayButton();
+    updateNowPlayingVisual();
+}
+
+function updatePlayButton() {
+    var player = document.getElementById("player");
+    var toggle = document.getElementById("playToggle");
+    if (!player || !toggle) {
+        return;
+    }
+    toggle.textContent = (!player.paused && player.currentSrc) ? "Stop" : "Play";
+}
+
+function updateNowPlayingVisual() {
+    var nowPlaying = document.querySelector(".now-playing");
+    var player = document.getElementById("player");
+    if (!nowPlaying || !player) {
+        return;
+    }
+    if (!player.paused && player.currentSrc) {
+        nowPlaying.classList.add("playing");
+    } else {
+        nowPlaying.classList.remove("playing");
+    }
+}
+
+function markActiveButton() {
+    var list = document.getElementById("serviceList");
+    if (!list) {
+        return;
+    }
+    var buttons = list.getElementsByClassName("service-button");
+    for (var i = 0; i < buttons.length; i++) {
+        if (buttons[i].dataset.sid === String(currentServiceId)) {
+            buttons[i].classList.add("active");
+        } else {
+            buttons[i].classList.remove("active");
+        }
+    }
+}
+
+function renderNowPlaying() {
+    var fig2El = document.getElementById("fig2label");
+    var longLabelEl = document.getElementById("ensemblelabel");
+    var dlsEl = document.getElementById("dlsText");
+    var service = resolveService(currentServiceId);
+    if (service) {
+        var fig2 = "";
+        var longLabel = "";
+        if (service.label) {
+            longLabel = service.label.label || "";
+            fig2 = service.label.fig2label || "";
+        }
+        if (!fig2 && longLabel) {
+            fig2 = longLabel;
+        }
+        fig2El.textContent = fig2 || "Service";
+        if (sameText(longLabel, fig2)) {
+            longLabel = "";
+        }
+        longLabelEl.textContent = longLabel;
+        dlsEl.textContent = (service.dls && service.dls.label) ? service.dls.label : "";
+        updateErrorPill(service);
+    } else {
+        fig2El.textContent = "Select a service";
+        longLabelEl.textContent = "";
+        dlsEl.textContent = "";
+        updateErrorPill(null);
+    }
+    markActiveButton();
+}
+
+function resolveService(sid) {
+    if (!sid || !latestMuxData || !latestMuxData.services) {
+        return null;
+    }
+    for (var key in latestMuxData.services) {
+        if (!Object.prototype.hasOwnProperty.call(latestMuxData.services, key)) {
+            continue;
+        }
+        var svc = latestMuxData.services[key];
+        if (String(svc.sid) === String(sid)) {
+            return svc;
+        }
+    }
+    return null;
+}
+
+function updateErrorPill(service) {
+    var pill = document.getElementById("errorPill");
+    var frameEl = document.getElementById("frameErrors");
+    var rsEl = document.getElementById("rsErrors");
+    var aacEl = document.getElementById("aacErrors");
+    if (!pill || !frameEl || !rsEl || !aacEl) {
+        return;
+    }
+    if (service && service.errorcounters) {
+        var frameValue = service.errorcounters.frameerrors || 0;
+        var rsValue = service.errorcounters.rserrors || 0;
+        var aacValue = service.errorcounters.aacerrors || 0;
+        frameEl.textContent = "Frame " + frameValue;
+        rsEl.textContent = "RS " + rsValue;
+        aacEl.textContent = "AAC " + aacValue;
+        if (frameValue > 0 || rsValue > 0 || aacValue > 0) {
+            pill.classList.remove("ok");
+        } else {
+            pill.classList.add("ok");
+        }
+    } else {
+        frameEl.textContent = "Frame -";
+        rsEl.textContent = "RS -";
+        aacEl.textContent = "AAC -";
+        pill.classList.add("ok");
+    }
+}
+
+function refreshChannel() {
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState !== 4 || xhr.status !== 200) {
+            return;
+        }
+        var selector = document.getElementById("channelselector");
+        if (selector) {
+            selector.value = xhr.responseText;
+            updateBlockInfo(selector.value);
+        }
+    };
+    xhr.open("GET", "/channel", true);
+    xhr.send();
+}
+        </script>
+
+        <div class="footer"><p>welle.io and welle-cli is DAB and DAB+ software defined radio (SDR). For more information visit <a href="https://github.com/AlbrechtL/welle.io/">https://github.com/AlbrechtL/welle.io/</a> and <a href="https://www.welle.io">https://www.welle.io</a></p></div>
+    </body>
+</html>
