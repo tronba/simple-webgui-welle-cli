@@ -106,6 +106,23 @@ body {
     transform: scale(0.98);
 }
 
+.record-button {
+    flex-shrink: 0;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+    background: linear-gradient(135deg, #2ec46d, #1a8a4a);
+    box-shadow: 0 6px 12px rgba(46, 196, 109, 0.25);
+    cursor: pointer;
+}
+
+.record-button:active {
+    transform: scale(0.98);
+}
+
 .error-pill {
     flex: 1;
     padding: 10px 14px;
@@ -191,8 +208,9 @@ audio {
                     <p class="ensemble-label" id="ensemblelabel"></p>
                 </div>
                 <div class="dls-text" id="dlsText"></div>
+                <button type="button" class="primary-button" id="playToggle">Play</button>
                 <div class="controls-row">
-                    <button type="button" class="primary-button" id="playToggle">Play</button>
+                    <button type="button" class="record-button" id="recordToggle">Rec</button>
                     <div class="error-pill ok" id="errorPill">
                         <span id="frameErrors">Frame 0</span>
                         <span id="rsErrors">RS 0</span>
@@ -243,10 +261,14 @@ var currentServiceId = null;
 var latestMuxData = null;
 var channelRefreshTimer = null;
 var muxRefreshTimer = null;
+var mediaRecorder = null;
+var recordedChunks = [];
+var recordingStartTime = null;
 
 window.onload = function () {
     populateChannelSelector();
     attachPlayerControls();
+    attachRecordingControls();
     refreshChannel();
     fetchMux();
     channelRefreshTimer = setInterval(refreshChannel, 2000);
@@ -502,9 +524,9 @@ function updateErrorPill(service) {
         var frameValue = service.errorcounters.frameerrors || 0;
         var rsValue = service.errorcounters.rserrors || 0;
         var aacValue = service.errorcounters.aacerrors || 0;
-        frameEl.textContent = "Frame " + frameValue;
-        rsEl.textContent = "RS " + rsValue;
-        aacEl.textContent = "AAC " + aacValue;
+        frameEl.textContent = "Frame " + formatErrorCount(frameValue);
+        rsEl.textContent = "RS " + formatErrorCount(rsValue);
+        aacEl.textContent = "AAC " + formatErrorCount(aacValue);
         if (frameValue > 0 || rsValue > 0 || aacValue > 0) {
             pill.classList.remove("ok");
         } else {
@@ -532,6 +554,145 @@ function refreshChannel() {
     };
     xhr.open("GET", "/channel", true);
     xhr.send();
+}
+
+function attachRecordingControls() {
+    var recordButton = document.getElementById("recordToggle");
+    var player = document.getElementById("player");
+    if (!recordButton || !player) {
+        return;
+    }
+    
+    recordButton.onclick = function() {
+        if (!currentServiceId) {
+            alert("Please select and play a service first");
+            return;
+        }
+        
+        if (mediaRecorder && mediaRecorder.state === "recording") {
+            stopRecording();
+        } else {
+            startRecording();
+        }
+    };
+}
+
+function startRecording() {
+    var player = document.getElementById("player");
+    
+    if (!player.currentSrc || player.paused) {
+        alert("Please start playback before recording");
+        return;
+    }
+    
+    try {
+        var audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        var source = audioContext.createMediaElementSource(player);
+        var destination = audioContext.createMediaStreamDestination();
+        source.connect(destination);
+        source.connect(audioContext.destination);
+        
+        recordedChunks = [];
+        var options = { mimeType: 'audio/webm' };
+        
+        if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+            options = { mimeType: 'audio/ogg' };
+            if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+                options = { mimeType: '' };
+            }
+        }
+        
+        mediaRecorder = new MediaRecorder(destination.stream, options);
+        
+        mediaRecorder.ondataavailable = function(event) {
+            if (event.data.size > 0) {
+                recordedChunks.push(event.data);
+            }
+        };
+        
+        mediaRecorder.onstop = function() {
+            saveRecording();
+        };
+        
+        mediaRecorder.start(1000);
+        recordingStartTime = new Date();
+        updateRecordButton(true);
+    } catch (error) {
+        console.error("Error starting recording:", error);
+        alert("Failed to start recording: " + error.message);
+    }
+}
+
+function stopRecording() {
+    if (mediaRecorder && mediaRecorder.state === "recording") {
+        mediaRecorder.stop();
+        updateRecordButton(false);
+    }
+}
+
+function saveRecording() {
+    if (recordedChunks.length === 0) {
+        return;
+    }
+    
+    var blob = new Blob(recordedChunks, { type: mediaRecorder.mimeType });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    document.body.appendChild(a);
+    a.style = "display: none";
+    a.href = url;
+    
+    var service = resolveService(currentServiceId);
+    var serviceName = "recording";
+    if (service && service.label) {
+        serviceName = service.label.fig2label || service.label.label || currentServiceId;
+        serviceName = serviceName.replace(/[^a-zA-Z0-9]/g, "_");
+    }
+    
+    var timestamp = formatTimestamp(recordingStartTime);
+    var extension = mediaRecorder.mimeType.includes("webm") ? "webm" : "ogg";
+    a.download = serviceName + "_" + timestamp + "." + extension;
+    
+    a.click();
+    URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+    
+    recordedChunks = [];
+}
+
+function updateRecordButton(isRecording) {
+    var recordButton = document.getElementById("recordToggle");
+    if (!recordButton) {
+        return;
+    }
+    
+    if (isRecording) {
+        recordButton.textContent = "Stop";
+        recordButton.style.background = "linear-gradient(135deg, #f44f38, #d3321c)";
+    } else {
+        recordButton.textContent = "Rec";
+        recordButton.style.background = "linear-gradient(135deg, #2ec46d, #1a8a4a)";
+    }
+}
+
+function formatTimestamp(date) {
+    var year = date.getFullYear();
+    var month = String(date.getMonth() + 1).padStart(2, '0');
+    var day = String(date.getDate()).padStart(2, '0');
+    var hours = String(date.getHours()).padStart(2, '0');
+    var minutes = String(date.getMinutes()).padStart(2, '0');
+    var seconds = String(date.getSeconds()).padStart(2, '0');
+    return year + month + day + "_" + hours + minutes + seconds;
+}
+
+function formatErrorCount(count) {
+    if (count >= 1000000) {
+        return (count / 1000000).toFixed(2) + "M";
+    }
+    if (count >= 1000) {
+        return (count / 1000).toFixed(2) + "k";
+    }
+    return String(count);
 }
         </script>
 
