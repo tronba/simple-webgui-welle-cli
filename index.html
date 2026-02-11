@@ -197,9 +197,12 @@ audio {
     <body>
         <div class="app">
             <div class="toolbar">
+                <label for="countryselector">Country</label>
+                <select id="countryselector"></select>
                 <label for="channelselector">Block</label>
                 <select id="channelselector" name="channel"></select>
                 <p class="block-note" id="blockInfo"></p>
+                <p class="block-note" id="antennaInfo"></p>
             </div>
 
             <section class="now-playing">
@@ -224,31 +227,7 @@ audio {
 
         <audio id="player"></audio>
         <script type="text/javascript">
-var channels = ["5A","5B","5C","5D","6A","6B","6C","6D","7A","7B","7C","7D","8A","8B","8C","8D","9A","9B","9C","9D","10A","10B","10C","10D","11A","11B","11C","11D","12A","12B","12C","12D","13A","13B","13C","13D","13E","13F"];
-
-var channelLabels = {
-    // Example: "12C": "12C • Tromsø"
-};
-
-var channelNotes = {
-    // Example: "12C": "Regional mux covering northern counties"
-};
-
-function getChannelLabel(code) {
-    return channelLabels[code] || code;
-}
-
-function getChannelNote(code) {
-    return channelNotes[code] || "";
-}
-
-function updateBlockInfo(code) {
-    var target = document.getElementById("blockInfo");
-    if (!target) {
-        return;
-    }
-    target.textContent = getChannelNote(code);
-}
+var dabData = null;
 
 function sameText(a, b) {
     if (!a || !b) {
@@ -266,36 +245,141 @@ var recordedChunks = [];
 var recordingStartTime = null;
 
 window.onload = function () {
-    populateChannelSelector();
-    attachPlayerControls();
-    attachRecordingControls();
-    refreshChannel();
-    fetchMux();
-    channelRefreshTimer = setInterval(refreshChannel, 2000);
-    muxRefreshTimer = setInterval(fetchMux, 1000);
+    loadDabData(function () {
+        populateCountrySelector();
+        attachPlayerControls();
+        attachRecordingControls();
+        refreshChannel();
+        fetchMux();
+        channelRefreshTimer = setInterval(refreshChannel, 2000);
+        muxRefreshTimer = setInterval(fetchMux, 1000);
+    });
 };
 
-function populateChannelSelector() {
+function loadDabData(callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState !== 4) {
+            return;
+        }
+        if (xhr.status === 200) {
+            dabData = JSON.parse(xhr.responseText);
+        }
+        callback();
+    };
+    xhr.open("GET", "dab-channels.json", true);
+    xhr.send();
+}
+
+function populateCountrySelector() {
+    var countrySelect = document.getElementById("countryselector");
+    var channelSelect = document.getElementById("channelselector");
+    if (!countrySelect || !channelSelect) {
+        return;
+    }
+    countrySelect.innerHTML = "";
+    var placeholder = document.createElement("option");
+    placeholder.value = "";
+    placeholder.text = "Select country…";
+    placeholder.disabled = true;
+    placeholder.selected = true;
+    countrySelect.add(placeholder);
+
+    if (dabData && dabData.countries) {
+        var names = Object.keys(dabData.countries);
+        for (var i = 0; i < names.length; i++) {
+            var opt = document.createElement("option");
+            opt.value = names[i];
+            opt.text = names[i];
+            countrySelect.add(opt);
+        }
+    }
+
+    countrySelect.onchange = function () {
+        populateChannelSelector(countrySelect.value);
+    };
+
+    channelSelect.onchange = function () {
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/channel", true);
+        xhr.setRequestHeader("Content-type", "text/plain");
+        xhr.send(channelSelect.value);
+        updateBlockInfo(channelSelect.value);
+        updateAntennaInfo(channelSelect.value);
+    };
+
+    // Fall back to full list if no country chosen yet
+    populateChannelSelector("");
+}
+
+function populateChannelSelector(country) {
     var selector = document.getElementById("channelselector");
     if (!selector) {
         return;
     }
     selector.innerHTML = "";
-    for (var i = 0; i < channels.length; i++) {
-        var option = document.createElement("option");
-        option.value = channels[i];
-        option.text = getChannelLabel(channels[i]);
-        selector.add(option);
+
+    if (country && dabData && dabData.countries && dabData.countries[country]) {
+        var countryBlocks = dabData.countries[country];
+        var codes = Object.keys(countryBlocks);
+        codes.sort(blockSort);
+        for (var i = 0; i < codes.length; i++) {
+            var opt = document.createElement("option");
+            opt.value = codes[i];
+            opt.text = codes[i] + " – " + countryBlocks[codes[i]];
+            selector.add(opt);
+        }
+    } else {
+        // No country selected — show all blocks
+        var allBlocks = ["5A","5B","5C","5D","6A","6B","6C","6D","7A","7B","7C","7D","8A","8B","8C","8D","9A","9B","9C","9D","10A","10B","10C","10D","11A","11B","11C","11D","12A","12B","12C","12D","13A","13B","13C","13D","13E","13F"];
+        for (var j = 0; j < allBlocks.length; j++) {
+            var opt2 = document.createElement("option");
+            opt2.value = allBlocks[j];
+            opt2.text = allBlocks[j];
+            selector.add(opt2);
+        }
     }
-    selector.onchange = function () {
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", "/channel", true);
-        xhr.setRequestHeader("Content-type", "text/plain");
-        xhr.send(selector.value);
-        updateBlockInfo(selector.value);
-    };
-    var selectedValue = selector.value || (selector.options.length ? selector.options[0].value : "");
+
+    var selectedValue = selector.value || "";
     updateBlockInfo(selectedValue);
+    updateAntennaInfo(selectedValue);
+}
+
+function blockSort(a, b) {
+    var numA = parseInt(a, 10);
+    var numB = parseInt(b, 10);
+    if (numA !== numB) {
+        return numA - numB;
+    }
+    var letterA = a.replace(/[0-9]/g, "");
+    var letterB = b.replace(/[0-9]/g, "");
+    return letterA < letterB ? -1 : (letterA > letterB ? 1 : 0);
+}
+
+function updateBlockInfo(code) {
+    var target = document.getElementById("blockInfo");
+    if (!target) {
+        return;
+    }
+    var country = document.getElementById("countryselector");
+    if (country && country.value && dabData && dabData.countries && dabData.countries[country.value]) {
+        target.textContent = dabData.countries[country.value][code] || "";
+    } else {
+        target.textContent = "";
+    }
+}
+
+function updateAntennaInfo(code) {
+    var target = document.getElementById("antennaInfo");
+    if (!target) {
+        return;
+    }
+    if (code && dabData && dabData.blocks && dabData.blocks[code]) {
+        var info = dabData.blocks[code];
+        target.textContent = "Antenna: ~" + info.antenna_cm + " cm (" + info.frequency_mhz + " MHz)";
+    } else {
+        target.textContent = "";
+    }
 }
 
 function attachPlayerControls() {
@@ -550,6 +634,7 @@ function refreshChannel() {
         if (selector) {
             selector.value = xhr.responseText;
             updateBlockInfo(selector.value);
+            updateAntennaInfo(selector.value);
         }
     };
     xhr.open("GET", "/channel", true);

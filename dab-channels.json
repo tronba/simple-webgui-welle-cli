@@ -1,0 +1,347 @@
+{
+    "blocks": {
+        "5A":  { "frequency_mhz": 174.928, "antenna_cm": 42.9 },
+        "5B":  { "frequency_mhz": 176.640, "antenna_cm": 42.5 },
+        "5C":  { "frequency_mhz": 178.352, "antenna_cm": 42.1 },
+        "5D":  { "frequency_mhz": 180.064, "antenna_cm": 41.7 },
+        "6A":  { "frequency_mhz": 181.936, "antenna_cm": 41.2 },
+        "6B":  { "frequency_mhz": 183.648, "antenna_cm": 40.8 },
+        "6C":  { "frequency_mhz": 185.360, "antenna_cm": 40.5 },
+        "6D":  { "frequency_mhz": 187.072, "antenna_cm": 40.1 },
+        "7A":  { "frequency_mhz": 188.928, "antenna_cm": 39.7 },
+        "7B":  { "frequency_mhz": 190.640, "antenna_cm": 39.3 },
+        "7C":  { "frequency_mhz": 192.352, "antenna_cm": 39.0 },
+        "7D":  { "frequency_mhz": 194.064, "antenna_cm": 38.6 },
+        "8A":  { "frequency_mhz": 195.936, "antenna_cm": 38.3 },
+        "8B":  { "frequency_mhz": 197.648, "antenna_cm": 37.9 },
+        "8C":  { "frequency_mhz": 199.360, "antenna_cm": 37.6 },
+        "8D":  { "frequency_mhz": 201.072, "antenna_cm": 37.3 },
+        "9A":  { "frequency_mhz": 202.928, "antenna_cm": 37.0 },
+        "9B":  { "frequency_mhz": 204.640, "antenna_cm": 36.6 },
+        "9C":  { "frequency_mhz": 206.352, "antenna_cm": 36.4 },
+        "9D":  { "frequency_mhz": 208.064, "antenna_cm": 36.0 },
+        "10A": { "frequency_mhz": 209.936, "antenna_cm": 35.7 },
+        "10B": { "frequency_mhz": 211.648, "antenna_cm": 35.4 },
+        "10C": { "frequency_mhz": 213.360, "antenna_cm": 35.1 },
+        "10D": { "frequency_mhz": 215.072, "antenna_cm": 34.9 },
+        "11A": { "frequency_mhz": 216.928, "antenna_cm": 34.6 },
+        "11B": { "frequency_mhz": 218.640, "antenna_cm": 34.3 },
+        "11C": { "frequency_mhz": 220.352, "antenna_cm": 34.0 },
+        "11D": { "frequency_mhz": 222.064, "antenna_cm": 33.8 },
+        "12A": { "frequency_mhz": 223.936, "antenna_cm": 33.5 },
+        "12B": { "frequency_mhz": 225.648, "antenna_cm": 33.2 },
+        "12C": { "frequency_mhz": 227.360, "antenna_cm": 33.0 },
+        "12D": { "frequency_mhz": 229.072, "antenna_cm": 32.7 },
+        "13A": { "frequency_mhz": 230.784, "antenna_cm": 32.5 },
+        "13B": { "frequency_mhz": 232.496, "antenna_cm": 32.3 },
+        "13C": { "frequency_mhz": 234.208, "antenna_cm": 32.0 },
+        "13D": { "frequency_mhz": 235.776, "antenna_cm": 31.8 },
+        "13E": { "frequency_mhz": 237.488, "antenna_cm": 31.6 },
+        "13F": { "frequency_mhz": 239.200, "antenna_cm": 31.4 }
+    },
+
+    "countries": {
+        "Australia": {
+            "8C": "Commercial regional",
+            "8D": "Commercial Canberra",
+            "9A": "Commercial Mux 1",
+            "9B": "Commercial Mux 2",
+            "9C": "ABC/SBS national",
+            "9D": "Commercial Gold Coast"
+        },
+        "Austria": {
+            "5B": "ORS MUX I Salzburg/Tirol",
+            "5D": "ORS MUX I Wien/NÖ",
+            "6A": "ORS MUX I Kärnten",
+            "6D": "ORS MUX I Oberösterreich",
+            "8A": "ORS MUX I Steiermark",
+            "10B": "ORS MUX II regional"
+        },
+        "Azerbaijan": {
+            "12A": "TeleRadio Baku"
+        },
+        "Belgium": {
+            "5A": "Norkring Flanders",
+            "5B": "RTBF Hainaut",
+            "5C": "RTBF Bruxelles",
+            "5D": "Norkring Flanders",
+            "6A": "Commercial Bruxelles",
+            "6B": "Commercial Namur",
+            "6C": "Commercial Hainaut",
+            "6D": "Commercial Liège",
+            "8A": "BRF Ostbelgien",
+            "8D": "RTBF Liège",
+            "11A": "Broadcast Partners Flanders",
+            "11D": "RTBF Namur",
+            "12A": "VRT Flanders"
+        },
+        "Czech Republic": {
+            "12C": "Český Rozhlas Bohemia",
+            "12D": "Český Rozhlas Moravia"
+        },
+        "Denmark": {
+            "6D": "MUX3 Vestjylland",
+            "8B": "DR South Jutland",
+            "8C": "MUX3 Thisted",
+            "11B": "MUX3 Nordjylland",
+            "11C": "DR Eastern Denmark",
+            "11D": "MUX3 Viborg",
+            "12A": "MUX3 Bornholm/Fyn",
+            "12C": "Cibicom national",
+            "13B": "DR North Jutland"
+        },
+        "Estonia": {
+            "5D": "Levira R1 Tartu",
+            "6A": "Levira R1 Pärnu",
+            "7B": "Levira R1 Tallinn",
+            "8B": "Levira R3 Tartu",
+            "9B": "Levira R3 Järva",
+            "10D": "Levira R3 Tallinn"
+        },
+        "France": {
+            "5B": "M1 Bordeaux",
+            "5C": "M1 Perpignan",
+            "6A": "M1 Strasbourg",
+            "6B": "M2 Strasbourg",
+            "6C": "M1 Paris/Toulouse",
+            "7A": "M1 Lyon/St-Étienne",
+            "7B": "M2 Lyon/Bordeaux",
+            "7C": "M1 Marseille/Corse",
+            "7D": "M1 Orléans/Clermont",
+            "8A": "M1 Limoges",
+            "8B": "M1+M2 Lille/Nantes",
+            "8C": "M1+M2 Paris/Metz",
+            "9A": "M1 Cahors",
+            "9B": "M1 Brest/Nice",
+            "9C": "M2 Besançon/Nice",
+            "9D": "M1+M2 Dijon/Rouen",
+            "10B": "M1 Montpellier/Poitiers",
+            "10C": "M2 Montpellier",
+            "11B": "M2 Limoges",
+            "12A": "M2 Toulouse"
+        },
+        "Germany": {
+            "5C": "Deutschlandradio national",
+            "5D": "Antenne DE North/East",
+            "6A": "MDR Sachsen-Anhalt",
+            "6B": "Bremen / MDR Sachsen",
+            "6C": "NDR Niedersachsen",
+            "7A": "NDR NI / MDR Thüringen",
+            "7B": "hr Hessen",
+            "7D": "rbb Berlin",
+            "8A": "SWR BW/Rheinland-Pfalz",
+            "8B": "NDR Meckl.-Vorpommern",
+            "8D": "NDR NI / SWR",
+            "9A": "SR Saarland / NDR SH",
+            "9B": "Antenne DE West / NDR NI",
+            "9C": "MDR Sachsen / NDR SH",
+            "9D": "SWR BW/Rheinland-Pfalz",
+            "10A": "NDR Niedersachsen",
+            "10B": "rbb Brandenburg",
+            "10C": "NDR MV / SH",
+            "11A": "NDR Hamburg",
+            "11B": "NDR / MDR regional",
+            "11D": "BR Bayern / WDR NRW",
+            "12B": "NDR MV / SH",
+            "12D": "Antenne DE South/Bayern"
+        },
+        "Ghana": {
+            "5B": "K-Net Accra/Kumasi trial"
+        },
+        "Gibraltar": {
+            "12B": "GBC Gibraltar 1",
+            "12C": "GBC Gibraltar 2"
+        },
+        "Greece": {
+            "5A": "ERT Thessaloniki",
+            "7A": "ERT Patras",
+            "12C": "ERT Athens"
+        },
+        "Italy": {
+            "6B": "DAB Italia Sicilia",
+            "6D": "RAI Sicilia SW",
+            "7C": "RAI main national",
+            "7D": "DAB Italia main national",
+            "8A": "DAB Italia Piemonte/VdA",
+            "8B": "RAI Piemonte/VdA",
+            "9A": "EuroDAB national",
+            "9B": "RAI Sondrio/Sardegna",
+            "9C": "RAI Trentino",
+            "10C": "RAI Toscana/Lazio/Campania",
+            "10D": "DAB Italia Lazio/Campania",
+            "12A": "RAI Alto Adige",
+            "12B": "DAB Italia Alto Adige"
+        },
+        "Kuwait": {
+            "11B": "MOI national"
+        },
+        "Luxembourg": {
+            "7D": "BCE national"
+        },
+        "Malta": {
+            "6A": "Digi B Mux 2",
+            "6C": "Digi B Mux 1",
+            "12A": "Digi B Mux 3"
+        },
+        "Monaco": {
+            "6C": "MMD Mux 4",
+            "8A": "MMD Mux 1 Riviera",
+            "12B": "MMD Mux 2 Riviera"
+        },
+        "Netherlands": {
+            "7D": "MTVNL national",
+            "8B": "Regional Noord-Holland",
+            "9C": "National Layer 7",
+            "11C": "Broadcast Partners national",
+            "12B": "Regional Gelderland",
+            "12C": "NPO national"
+        },
+        "Norway": {
+            "11A": "A-Media Riks II",
+            "12A": "A-Media Riks II Finnmark",
+            "12B": "NRK Hordaland/Nord-Norge",
+            "12C": "NRK Oslo/Trøndelag",
+            "12D": "Norkring Riksblokka",
+            "13A": "NRK Buskerud/Telemark",
+            "13E": "NRK Innlandet/Nord-Norge",
+            "13F": "NRK Agder/Rogaland"
+        },
+        "Poland": {
+            "5B": "Commercial Wrocław/Bielsko",
+            "5C": "PR Białystok / Comm. Poznań",
+            "6A": "Commercial Kielce",
+            "6C": "Commercial Toruń",
+            "6D": "Commercial Warszawa",
+            "9A": "Commercial Kraków",
+            "9B": "Commercial Rzeszów",
+            "10B": "Commercial Katowice/Warszawa",
+            "10C": "Commercial Łódź",
+            "11A": "Commercial Wrocław",
+            "11B": "Commercial Warszawa",
+            "12B": "Commercial Wrocław/Szczecin",
+            "12C": "Commercial Katowice"
+        },
+        "Saudi Arabia": {
+            "11A": "SBA Riyadh Mux A",
+            "11D": "SBA Riyadh / Al Ahsa"
+        },
+        "Serbia": {
+            "11C": "ETV Southern Central",
+            "12A": "ETV Eastern Serbia",
+            "12B": "ETV Central/Western",
+            "12C": "ETV Belgrade",
+            "12D": "ETV Western Serbia"
+        },
+        "Slovakia": {
+            "6D": "Towercom Western",
+            "8A": "Towercom Central",
+            "10C": "Towercom Nitra",
+            "11C": "Towercom Rim. Sobota",
+            "12A": "Towercom Central",
+            "12C": "Towercom Bratislava"
+        },
+        "Slovenia": {
+            "5A": "Digimedia Layer 4",
+            "10D": "Digimedia national",
+            "12B": "Digimedia East",
+            "12C": "Digimedia West"
+        },
+        "South Africa": {
+            "13F": "Sentech Gauteng/Cape Town"
+        },
+        "South Korea": {
+            "7B": "KBS Daegu (T-DMB)",
+            "8A": "Korea DMB Seoul (T-DMB)",
+            "8B": "YTN DMB Seoul (T-DMB)",
+            "8C": "Korea QBS Seoul (T-DMB)",
+            "11B": "KBS Cheongju (T-DMB)",
+            "12A": "MBC DMB Seoul (T-DMB)",
+            "12B": "KBS Seoul/Busan (T-DMB)",
+            "12C": "SBS DMB Seoul (T-DMB)",
+            "13B": "KBS Chuncheon/Jeju (T-DMB)"
+        },
+        "Sweden": {
+            "6A": "Bauer Göteborg",
+            "6C": "Viaplay Göteborg",
+            "7C": "Bauer Malmö",
+            "10B": "Viaplay Gävle",
+            "12A": "Bauer Stockholm",
+            "12B": "SR Göteborg/Malmö/Uppsala",
+            "12C": "SR Stockholm"
+        },
+        "Switzerland": {
+            "7A": "SRG SSR Graubünden",
+            "7D": "SMC commercial DE",
+            "9D": "SMC commercial DE",
+            "10B": "RMS commercial FR",
+            "12A": "SRG SSR Romandie/Italiana",
+            "12C": "SRG SSR Deutschschweiz"
+        },
+        "Tunisia": {
+            "10D": "ONT Sfax",
+            "12A": "ONT Jendouba",
+            "12C": "ONT Tunis/Sousse",
+            "12D": "ONT Bizerte"
+        },
+        "Turkey": {
+            "12B": "TRT Ankara/Istanbul",
+            "12C": "Camlica Istanbul"
+        },
+        "United Kingdom": {
+            "10C": "Bauer Liverpool",
+            "10D": "MuxCo North Wales",
+            "11A": "Sound Digital national",
+            "11B": "DRG London 3",
+            "11C": "CE Digital Birmingham/Glasgow",
+            "11D": "Digital One national",
+            "12A": "D1 Scotland / London 2",
+            "12B": "BBC national",
+            "12C": "CE Digital London/Manchester",
+            "12D": "Bauer/MuxCo regional"
+        },
+        "Vatican City": {
+            "7B": "Radio Vaticana Rome",
+            "12D": "Radio Vaticana Rome"
+        },
+        "Manual": {
+            "5A":  "174.928 MHz",
+            "5B":  "176.640 MHz",
+            "5C":  "178.352 MHz",
+            "5D":  "180.064 MHz",
+            "6A":  "181.936 MHz",
+            "6B":  "183.648 MHz",
+            "6C":  "185.360 MHz",
+            "6D":  "187.072 MHz",
+            "7A":  "188.928 MHz",
+            "7B":  "190.640 MHz",
+            "7C":  "192.352 MHz",
+            "7D":  "194.064 MHz",
+            "8A":  "195.936 MHz",
+            "8B":  "197.648 MHz",
+            "8C":  "199.360 MHz",
+            "8D":  "201.072 MHz",
+            "9A":  "202.928 MHz",
+            "9B":  "204.640 MHz",
+            "9C":  "206.352 MHz",
+            "9D":  "208.064 MHz",
+            "10A": "209.936 MHz",
+            "10B": "211.648 MHz",
+            "10C": "213.360 MHz",
+            "10D": "215.072 MHz",
+            "11A": "216.928 MHz",
+            "11B": "218.640 MHz",
+            "11C": "220.352 MHz",
+            "11D": "222.064 MHz",
+            "12A": "223.936 MHz",
+            "12B": "225.648 MHz",
+            "12C": "227.360 MHz",
+            "12D": "229.072 MHz",
+            "13A": "230.784 MHz",
+            "13B": "232.496 MHz",
+            "13C": "234.208 MHz",
+            "13D": "235.776 MHz",
+            "13E": "237.488 MHz",
+            "13F": "239.200 MHz"
+        }
+    }
+}
